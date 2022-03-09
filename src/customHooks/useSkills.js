@@ -8,25 +8,27 @@ export const useSkills = () => {
   const [ state, dispatch ] = useReducer(skillReducer, initialState);
 
   const fetchReposApi = () => {
+    dispatch({ type: actionTypes.fetch });
     axios.get('https://api.github.com/users/suzuki-motomichi/repos')
-    .then((response) => {
-      const languageList = response.data.map(res => res.language);
-      const countedLanguageList = generateLanguageCountObj(languageList);
-      dispatch({ type: actionTypes.success, payload: { languageList: countedLanguageList } });
-    })
-    .catch(() => {
-      dispatch({ type: actionTypes.error });
-    });
+      .then((response) => {
+        const languageList = response.data.map(res => res.language)
+        const countedLanguageList = generateLanguageCountObj(languageList)
+        dispatch({ type: actionTypes.success, payload: {languageList: countedLanguageList } });
+      })
+      .catch(() => {
+        dispatch({ type: actionTypes.error });
+      });
   }
 
   useEffect(() => {
-    if(state.requestState !== requestStates.loading) {return;}
+    if (state.requestState !== requestStates.loading) { return; }
     fetchReposApi();
-  },[state.requestState]);
+  }, [state.requestState]);
 
   useEffect(() => {
+    fetchReposApi();
     dispatch({ type: actionTypes.fetch });
-  },[]);
+  }, []);
 
   const generateLanguageCountObj = (allLanguageList) => {
     const notNullLanguageList = allLanguageList.filter(language => language != null);
